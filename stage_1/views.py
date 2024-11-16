@@ -1,19 +1,25 @@
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 
-# dictionary to return value for the incoming option path
-optionValues={"name":"Adonas Haile Mergeta","hobby":"Physical exercise, watching movies","dream":"First, land a job as a python developer, then create a start up"}
+# dictionary to return value based on the  incoming routes
+routeValues={"name":"Adonas Haile Mergeta","hobbies":['physical exercise', 'watching movies','coding dailly','listening to music','I love touring but have\'t done one yet'],"dream":"First, land a job as a fullstack developer, then create a startup"}
 
-# handles the incomeing request if there is no option values get passed from client
-def index(response):
+# handles the incoming request if there is no route values get passed from client
+def index(request):
    return HttpResponse('Welcome to InternTechHub backend interns stage_1 project')
 
-"""
- handle the request if there is an option from the client.
- if the option matches any of the optionValues keys, the method returns the corresponding value.
+# handle the incoming request for /name route
+def getName(request):
+   return HttpResponse(routeValues["name"])
 
-"""
-def option(response,option):
-    if option in optionValues:
-      return HttpResponse(optionValues[option])
-    else:
-      return HttpResponseNotFound('Not Found')
+# handle the incoming request for /hobby route
+def getHobby(request):
+   return JsonResponse({"hobbies":routeValues["hobbies"]})
+
+# handle the incoming request for /dream route
+def getDream(request):
+   return HttpResponse(routeValues["dream"])
+# handle the incoming request incase there is no valide route
+def notFound(request):
+   return HttpResponseNotFound()
+
+
