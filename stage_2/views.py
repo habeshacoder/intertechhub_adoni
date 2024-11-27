@@ -89,3 +89,37 @@ def delete_book(request, pk):
     except Book.DoesNotExist:
         return Response({"detail": "Not Found"},
                         status=status.HTTP_404_NOT_FOUND)
+
+
+@extend_schema(
+    responses=BookSerializer,
+    description="Get all recommended books."
+)
+@API_VIEW(['GET'])
+def get_recommended_books(request):
+    """"Get all recommended books view"""
+    book = Book.objects.order_by('?').first()
+    if book:
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({"detail": "No Recommended Books"},
+                    status=status.HTTP_404_NOT_FOUND)
+
+
+@extend_schema(
+    responses=BookSerializer,
+    description="Add a book to favorite by id"
+)
+@API_VIEW(['PUT'])
+def favorite_book(request, pk):
+    """"Add a book to favorite view"""
+
+    try:
+        book = Book.objects.get(pk=pk)
+        book.isFavorite = True
+        book.save()
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Book.DoesNotExist:
+        return Response({"detail": "Not Found"},
+                        status=status.HTTP_404_NOT_FOUND)
