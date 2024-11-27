@@ -2,7 +2,8 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-gg#pp-_dc2jb1%og%(kcr-072m924mv%^4u5a@^7)*_d((l69d'
+SECRET_KEY = 'django-insecure-gg#pp-_dc2jb1%og%( \
+              kcr-072m924mv%^4u5a@^7)*_d((l69d'
 
 DEBUG = False
 
@@ -60,10 +61,12 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

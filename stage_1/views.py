@@ -1,7 +1,11 @@
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 
 # dictionary to return value based on the  incoming routes
-routeValues={"name":"Adonas Haile Mergeta","hobbies":['physical exercise', 'watching movies','coding dailly','listening to music','I love touring but have\'t done one yet'],"dream":"First, land a job as a fullstack developer, then create a startup"}
+routeValues={"name":"Adonas Haile Mergeta",
+             "hobbies":['physical exercise', 'watching movies',
+                        'coding dailly','listening to music',
+                        'I love touring but have\'t done one yet'],
+                        "dream":"First, land a job as a fullstack developer, then create a startup"}
 
 # handles the incoming request if there is no route values get passed from client
 def index(request):
@@ -21,5 +25,3 @@ def getDream(request):
 # handle the incoming request incase there is no valide route
 def notFound(request):
    return HttpResponseNotFound()
-
-
