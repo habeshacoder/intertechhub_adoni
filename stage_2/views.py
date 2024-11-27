@@ -108,7 +108,8 @@ def get_recommended_books(request):
 
 @extend_schema(
     responses=BookSerializer,
-    description="Add a book to favorite by id"
+    description="Add a book to favorite by id",
+
 )
 @API_VIEW(['PUT'])
 def favorite_book(request, pk):
