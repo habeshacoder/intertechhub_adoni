@@ -1,5 +1,39 @@
 # InternTechHub Django Project
 
+///////////////////////////////////////////////
+
+# stage_2
+
+# How to run this project locally?
+
+- clone this project
+
+- install the requirements.tx file
+
+> pip install -r requirements.txt
+
+- install the requirements.dev.txt (optional)
+
+> pip install -r requirements.dev.txt
+
+- start the server
+
+> python manage.py runserver
+
+# How to test this project in production
+
+- navigate to this url:
+
+  https://intertechhub-adoni.onrender.com
+
+- Use the API Documentation (Swagger UI) to test this project:
+
+  https://intertechhub-adoni.onrender.com/api/docs/
+
+  //////////////////////////////////////////////////////
+
+# stage_1
+
 - this is a django application responds an httpresponse based on the request. It responses a predefined a person's name, hobbies and dreams based on the the http request. This app also handles incase there is no resource for the incoming request
 
 ## Table of Contents
