@@ -9,7 +9,8 @@ from drf_spectacular.utils import extend_schema
 from stage_2.models import Book
 from stage_2.serializer import BookSerializer, LoginSerializer, TokenSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated, BasePermission
-from django.contrib.auth import get_user_model
+from .models import User
+
 
 class IsAdmin(BasePermission):
     """Custom persmission to allow only admins to access to views"""
@@ -22,44 +23,46 @@ class IsUser(BasePermission):
     def has_permission(self, request, view):
         return request.user and not request.user.is_admin
 
-
 # Get and Post Book View
 @extend_schema(
     request=UserSerializer,
-    responses={201: TokenSerializer},
-    description="Create a new user."
-)
+    description="Create a new user.")
 @API_VIEW(["POST"])
 def signup(request):
     """Create a new user."""
-    print('-----------------------')
     serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        token = RefreshToken.for_user(user)
-        return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        if serializer.is_valid():
+            try:
+                user = serializer.save()
+                token = RefreshToken.for_user(user)
+                return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                print("Error during user creation:", e)
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        else:
+            print("Validation Errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as err:
+        return Response({"error": str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     request=LoginSerializer,
-    responses={200: TokenSerializer},
-    description="Login a user and return JWT token."
-)
-@API_VIEW(['POST'])
+    description="Login end point.")
+@API_VIEW(["POST"])
 def login(request):
     """Login a user and return JWT token."""
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
-        email = serializer.validated_data['email']  # Change this line
+        email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-        user = get_user_model().objects.filter(email=email).first()  # Change this line
+        user = User.objects.filter(email=email).first()
         if user and user.check_password(password):
             token = RefreshToken.for_user(user)
             return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_200_OK)
         return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # Get and Post Book View
 @extend_schema(
@@ -70,7 +73,6 @@ def login(request):
 @permission_classes([IsAuthenticated, IsAdmin])
 def get_books(request):
     """Get all book view"""
-    print('------------------------')
     Books = Book.objects.all()
     serializer = BookSerializer(Books, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

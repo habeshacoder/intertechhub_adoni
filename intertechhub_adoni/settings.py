@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,19 +90,43 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'stage_2.User'
+
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+      'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
 }
 
-AUTH_USER_MODEL = 'stage_2.User'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1000),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1300),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "InterTechHub Stage_2 API",
+    "TITLE": "InterTechHub Stage_3 API",
     "DESCRIPTION": "Djano and Django REST Framework Project for InterTechHub Stage_2 API",
-    "VERSION": "1.0.0",
+    "VERSION": "2.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY": [
+        {"Bearer": []},  # Define Bearer authentication for Swagger UI
+    ],
 }
+
+# Add the Bearer security definition
+SPECTACULAR_SETTINGS.update({
+    "SCHEMAS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        },
+    },
+})

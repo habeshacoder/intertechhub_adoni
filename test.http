@@ -1,0 +1,12 @@
+GET http://127.0.0.1:8000/book/all HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzODQzODI4LCJpYXQiOjE3MzM3ODM4MjgsImp0aSI6IjBiYmY1ZDg5Y2QwZDRlZjk4NTUwNzU0NTIyMDU5Y2NkIiwidXNlcl9pZCI6NH0.BJF9S83HWk91TNLJhOfiZLenHwsrXPYMJ_g8c8ZmSBo
+Content-Type: application/json
+
+{
+  "title": "string",
+  "author": "string",
+  "isbn": "string",
+  "price": "-16",
+  "published_year": "2024-12-09",
+  "isFavorite": false
+}

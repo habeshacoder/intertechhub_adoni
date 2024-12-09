@@ -28,7 +28,7 @@ urlpatterns = [
          get_recommended_books, name='get_recommended_books',),
     path('book/favorite/<int:pk>', favorite_book, name='favorite_book',),
 
-    path('signup', signup, name='signup',),
-    path('signin', login, name='login',),
+    path('auth/signup', signup, name='signup',),
+    path('auth/signin', login, name='login',),
 
 ]
