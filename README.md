@@ -26,6 +26,7 @@
   https://intertechhub-adoni.onrender.com
 
 - Use the API Documentation (Swagger UI) to test this project:
+  (If this API document failed to work, Please use Postman or I wrote a file, test.http, on the root of the project dir you can test each APIs there.)
 
   https://intertechhub-adoni.onrender.com/api/docs/
 
