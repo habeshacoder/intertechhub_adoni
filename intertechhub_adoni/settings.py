@@ -90,6 +90,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_AUTHENTICATION_CLASSES": []
 }
 
 SPECTACULAR_SETTINGS = {
@@ -97,11 +99,4 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Djano and Django REST Framework Project for InterTechHub Stage_2 API",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-      'SECURITY': [],
-    'SWAGGER_UI_SETTINGS': {
-        'oauth2': {
-            'enabled': False,
-        },
-        'securityDefinitions': {},
-    },
 }

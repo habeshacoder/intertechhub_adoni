@@ -1,12 +1,56 @@
 """
 View for book API
 """
-from rest_framework.decorators import api_view as API_VIEW
+from rest_framework.decorators import api_view as API_VIEW, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from stage_2.models import Book
 from stage_2.serializer import BookSerializer
+from rest_framework.permissions import IsAuthenticated, BasePermission
+from django.contrib.auth import get_user_model
+
+class IsAdmin(BasePermission):
+    """Custom persmission to allow only admins to access to views"""
+    def has_permission(self, request, view):
+        return request.user and request.user.is_admin
+
+
+class IsUser(BasePermission):
+    """Custom permission to allow only users to access certain views"""
+    def has_permission(self, request, view):
+        return request.user and not request.user.is_admin
+
+
+# Get and Post Book View
+@extend_schema(
+    description="Create a new user"
+)
+@API_VIEW(["POST"])
+def signUp(request):
+    """Create a new user"""
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        token = RefreshToken.for_user(user)
+        return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@API_VIEW(['POST'])
+@extend_schema(description="Login a user and return JWT token.")
+def login(request):
+    """"Login a user and return JWT token"""
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        user = get_user_model().objects.filter(username=username).first()
+        if user and user.check_password(password):
+            token = RefreshToken.for_user(user)
+            return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_200_OK)
+        return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Get and Post Book View
@@ -16,8 +60,10 @@ from stage_2.serializer import BookSerializer
     description="Get all books."
 )
 @API_VIEW(["GET"])
+@permission_classes([IsAuthenticated, IsAdmin])
 def get_books(request):
     """Get all book view"""
+    print('------------------------')
     Books = Book.objects.all()
     serializer = BookSerializer(Books, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -29,6 +75,7 @@ def get_books(request):
     description="Create a new book."
 )
 @API_VIEW(["POST"])
+@permission_classes([IsAuthenticated, IsUser])
 def post_book(request):
     """Post book view"""
     serializer = BookSerializer(data=request.data)
@@ -43,6 +90,7 @@ def post_book(request):
     description="Get a book by id."
 )
 @API_VIEW(['GET'])
+@permission_classes([IsAuthenticated])
 def get_book(request, pk):
     """Get book by id  view"""
     try:
@@ -61,6 +109,7 @@ def get_book(request, pk):
     description="Update a book by id."
 )
 @API_VIEW(['PUT'])
+@permission_classes([IsAuthenticated, IsAdmin])
 def update_book(request, pk):
     """Update book by id  view"""
     try:
@@ -80,6 +129,7 @@ def update_book(request, pk):
     description="Delete a book by id."
 )
 @API_VIEW(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdmin])
 def delete_book(request, pk):
     """Delete book by id  view"""
     try:
@@ -96,6 +146,7 @@ def delete_book(request, pk):
     description="Get all recommended books."
 )
 @API_VIEW(['GET'])
+@permission_classes([IsAuthenticated])
 def get_recommended_books(request):
     """"Get all recommended books view"""
     book = Book.objects.order_by('?').first()
@@ -108,10 +159,9 @@ def get_recommended_books(request):
 
 @extend_schema(
     responses=BookSerializer,
-    description="Add a book to favorite by id",
-
-)
+    description="Add a book to favorite by id",)
 @API_VIEW(['PUT'])
+@permission_classes([IsAuthenticated])
 def favorite_book(request, pk):
     """"Add a book to favorite view"""
 
