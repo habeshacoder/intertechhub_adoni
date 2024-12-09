@@ -1,4 +1,33 @@
 # InternTechHub Django Project
+///////////////////////////////////////////////
+
+# stage_3
+
+# How to run this project locally?
+
+- clone this project
+
+- install the requirements.tx file
+
+> pip install -r requirements.txt
+
+- install the requirements.dev.txt (optional)
+
+> pip install -r requirements.dev.txt
+
+- start the server
+
+> python manage.py runserver
+
+# How to test this project in production
+
+- navigate to this url:
+
+  https://intertechhub-adoni.onrender.com
+
+- Use the API Documentation (Swagger UI) to test this project:
+
+  https://intertechhub-adoni.onrender.com/api/docs/
 
 ///////////////////////////////////////////////
 
