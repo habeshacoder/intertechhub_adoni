@@ -19,14 +19,36 @@ class BookSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['username', 'password', 'is_admin']
+        fields = ['email', 'password', 'name']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = get_user_model().objects.create_user(**validated_data)
+        # Remove is_admin if you want to manage it differently
+        is_admin = validated_data.pop('is_admin', False)
+        user = get_user_model().objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            **validated_data
+        )
+        user.is_admin = is_admin  # Optionally set is_admin
+        user.save()
         return user
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        if email and password:
+            user = get_user_model().objects.filter(email=email).first()
+            if user and user.check_password(password):
+                return attrs
+        raise serializers.ValidationError("Invalid credentials")
+
+
+class TokenSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    access = serializers.CharField()

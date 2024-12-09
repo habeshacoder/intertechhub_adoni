@@ -4,9 +4,10 @@ View for book API
 from rest_framework.decorators import api_view as API_VIEW, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
 from stage_2.models import Book
-from stage_2.serializer import BookSerializer
+from stage_2.serializer import BookSerializer, LoginSerializer, TokenSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.contrib.auth import get_user_model
 
@@ -24,11 +25,14 @@ class IsUser(BasePermission):
 
 # Get and Post Book View
 @extend_schema(
-    description="Create a new user"
+    request=UserSerializer,
+    responses={201: TokenSerializer},
+    description="Create a new user."
 )
 @API_VIEW(["POST"])
-def signUp(request):
-    """Create a new user"""
+def signup(request):
+    """Create a new user."""
+    print('-----------------------')
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
@@ -37,15 +41,19 @@ def signUp(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    request=LoginSerializer,
+    responses={200: TokenSerializer},
+    description="Login a user and return JWT token."
+)
 @API_VIEW(['POST'])
-@extend_schema(description="Login a user and return JWT token.")
 def login(request):
-    """"Login a user and return JWT token"""
+    """Login a user and return JWT token."""
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
-        username = serializer.validated_data['username']
+        email = serializer.validated_data['email']  # Change this line
         password = serializer.validated_data['password']
-        user = get_user_model().objects.filter(username=username).first()
+        user = get_user_model().objects.filter(email=email).first()  # Change this line
         if user and user.check_password(password):
             token = RefreshToken.for_user(user)
             return Response({'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_200_OK)
@@ -57,8 +65,7 @@ def login(request):
 @extend_schema(
     responses=BookSerializer(many=True),
     request=BookSerializer,
-    description="Get all books."
-)
+    description="Get all books.")
 @API_VIEW(["GET"])
 @permission_classes([IsAuthenticated, IsAdmin])
 def get_books(request):
@@ -72,8 +79,7 @@ def get_books(request):
 @extend_schema(
     responses=BookSerializer,
     request=BookSerializer,
-    description="Create a new book."
-)
+    description="Create a new book.")
 @API_VIEW(["POST"])
 @permission_classes([IsAuthenticated, IsUser])
 def post_book(request):
@@ -87,8 +93,7 @@ def post_book(request):
 
 @extend_schema(
     responses=BookSerializer,
-    description="Get a book by id."
-)
+    description="Get a book by id.")
 @API_VIEW(['GET'])
 @permission_classes([IsAuthenticated])
 def get_book(request, pk):
@@ -106,8 +111,7 @@ def get_book(request, pk):
 @extend_schema(
     responses=BookSerializer,
     request=BookSerializer,
-    description="Update a book by id."
-)
+    description="Update a book by id.")
 @API_VIEW(['PUT'])
 @permission_classes([IsAuthenticated, IsAdmin])
 def update_book(request, pk):
@@ -126,8 +130,7 @@ def update_book(request, pk):
 
 @extend_schema(
     responses={204: "No Content"},
-    description="Delete a book by id."
-)
+    description="Delete a book by id.")
 @API_VIEW(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdmin])
 def delete_book(request, pk):
@@ -143,8 +146,7 @@ def delete_book(request, pk):
 
 @extend_schema(
     responses=BookSerializer,
-    description="Get all recommended books."
-)
+    description="Get all recommended books.")
 @API_VIEW(['GET'])
 @permission_classes([IsAuthenticated])
 def get_recommended_books(request):

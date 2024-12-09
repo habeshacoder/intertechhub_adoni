@@ -11,6 +11,8 @@ from .views import (
     delete_book,
     get_recommended_books,
     favorite_book,
+    signup,
+    login,
 )
 
 
@@ -25,4 +27,8 @@ urlpatterns = [
     path('book/recommended',
          get_recommended_books, name='get_recommended_books',),
     path('book/favorite/<int:pk>', favorite_book, name='favorite_book',),
+
+    path('signup', signup, name='signup',),
+    path('signin', login, name='login',),
+
 ]

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "drf_spectacular",
+    'rest_framework_simplejwt.token_blacklist',
     'stage_1',
     "stage_2",
 ]
@@ -91,8 +92,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "DEFAULT_AUTHENTICATION_CLASSES": []
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
 }
+
+AUTH_USER_MODEL = 'stage_2.User'
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "InterTechHub Stage_2 API",
